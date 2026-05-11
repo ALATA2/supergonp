@@ -446,39 +446,44 @@ export default class Game {
         if (this.state !== 'PLAYING') return;
 
         // Input
-        // P1
-        if (!('ontouchstart' in window) || Object.values(this.keys).some(v=>v)) {
-            // Only process keyboard if active (fallback)
-            this.paddles[0].vy = 0;
-            if (this.keys['KeyW']) this.paddles[0].vy = -this.paddles[0].speed;
-            if (this.keys['KeyS']) this.paddles[0].vy = this.paddles[0].speed;
+        // P1 Keyboard fallback
+        if (this.keys['KeyW'] || this.keys['KeyS']) {
+            this.paddles[0].vy = this.keys['KeyW'] ? -this.paddles[0].speed : this.paddles[0].speed;
+        } else if (!('ontouchstart' in window)) {
+            // Only zero out on non-touch devices (touch handles touchend)
+            this.paddles[0].vy = 0; 
+        }
 
-            // P2 (AI fallback if no keys)
-            this.paddles[1].vy = 0;
-            if (this.keys['ArrowUp']) {
-                this.paddles[1].vy = -this.paddles[1].speed;
-            } else if (this.keys['ArrowDown']) {
-                this.paddles[1].vy = this.paddles[1].speed;
-            } else {
-                // Simple AI: follow nearest ball
-                let closestBall = null;
-                let minDist = Infinity;
-                this.balls.forEach(b => {
-                    // Only care if ball is moving towards AI
-                    if (b.vx > 0) {
-                        const dist = this.canvas.width - b.x;
-                        if (dist < minDist) {
-                            minDist = dist;
-                            closestBall = b;
-                        }
+        // P2 Logic
+        if (!this.paddles[1].isAI) {
+            // Human P2 Keyboard fallback
+            if (this.keys['ArrowUp'] || this.keys['ArrowDown']) {
+                this.paddles[1].vy = this.keys['ArrowUp'] ? -this.paddles[1].speed : this.paddles[1].speed;
+            } else if (!('ontouchstart' in window)) {
+                this.paddles[1].vy = 0;
+            }
+        } else {
+            // Simple AI: follow nearest ball
+            let closestBall = null;
+            let minDist = Infinity;
+            this.balls.forEach(b => {
+                // Only care if ball is moving towards AI
+                if (b.vx > 0) {
+                    const dist = this.canvas.width - b.x;
+                    if (dist < minDist) {
+                        minDist = dist;
+                        closestBall = b;
                     }
-                });
-
-                if (closestBall) {
-                    const center = this.paddles[1].y + this.paddles[1].height / 2;
-                    if (closestBall.y < center - 10) this.paddles[1].vy = -this.paddles[1].speed * 0.7; // AI speed limit
-                    else if (closestBall.y > center + 10) this.paddles[1].vy = this.paddles[1].speed * 0.7;
                 }
+            });
+
+            if (closestBall) {
+                const center = this.paddles[1].y + this.paddles[1].height / 2;
+                if (closestBall.y < center - 10) this.paddles[1].vy = -this.paddles[1].speed * 0.7; // AI speed limit
+                else if (closestBall.y > center + 10) this.paddles[1].vy = this.paddles[1].speed * 0.7;
+                else this.paddles[1].vy = 0;
+            } else {
+                this.paddles[1].vy = 0;
             }
         }
 
