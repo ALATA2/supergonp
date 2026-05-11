@@ -184,8 +184,9 @@ p {
         left: 0;
         top: 0;
         transform: none;
-        margin-top: 20px;
-        width: 80%;
+        margin-top: 40px;
+        width: 90%;
+        order: 10; /* Moves it to the bottom of the screen flexbox */
     }
 }
 
@@ -307,5 +308,67 @@ p {
 #save-score-btn:hover {
     background: #fff;
     transform: scale(1.05);
+}
+
+/* --- MOBILE TOUCH CONTROLS --- */
+#mobile-controls {
+    display: none; /* Hidden on desktop */
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 20;
+    pointer-events: none; /* Container doesn't block touches */
+}
+
+.control-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.touch-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(0, 255, 255, 0.1);
+    border: 2px solid #0ff;
+    color: #0ff;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    pointer-events: auto; /* Buttons accept touches */
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+}
+
+.touch-btn:active {
+    background: rgba(0, 255, 255, 0.4);
+    transform: scale(0.95);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
+}
+
+.right-zone .touch-btn {
+    border-color: #f0f;
+    color: #f0f;
+    background: rgba(255, 0, 255, 0.1);
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+}
+
+.right-zone .touch-btn:active {
+    background: rgba(255, 0, 255, 0.4);
+    box-shadow: 0 0 25px rgba(255, 0, 255, 0.8);
+}
+
+@media (max-width: 768px) {
+    #mobile-controls {
+        display: flex;
+    }
 }
 

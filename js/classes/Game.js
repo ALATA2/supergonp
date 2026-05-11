@@ -121,56 +121,54 @@ export default class Game {
             this.keys[e.code] = false;
         });
 
-        // Touch (Ready for future mobile porting)
+        // Touch Virtual Buttons
+        const bindBtn = (id, pIdx, dir) => {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+            
+            const startMove = (e) => {
+                e.preventDefault(); // Prevent zoom/scroll
+                initBoot(); // In case they haven't booted
+                if (this.state === 'START') this.start();
+                if (this.state === 'PLAYING') {
+                    this.paddles[pIdx].vy = dir * this.paddles[pIdx].speed;
+                }
+            };
+            
+            const stopMove = (e) => {
+                e.preventDefault();
+                if (this.state === 'PLAYING') {
+                    // Only stop if moving in the same direction (prevents glitching if sliding between buttons)
+                    if (Math.sign(this.paddles[pIdx].vy) === Math.sign(dir)) {
+                        this.paddles[pIdx].vy = 0;
+                    }
+                }
+            };
+
+            btn.addEventListener('touchstart', startMove, {passive: false});
+            btn.addEventListener('touchend', stopMove, {passive: false});
+            btn.addEventListener('touchcancel', stopMove, {passive: false});
+            // Also support mouse clicks for testing on desktop
+            btn.addEventListener('mousedown', startMove);
+            btn.addEventListener('mouseup', stopMove);
+            btn.addEventListener('mouseleave', stopMove);
+        };
+
+        bindBtn('p1-up', 0, -1);
+        bindBtn('p1-down', 0, 1);
+        bindBtn('p2-up', 1, -1);
+        bindBtn('p2-down', 1, 1);
+
+        // Keep a simple tap on canvas to start the game
         this.canvas.addEventListener('touchstart', (e) => {
             initBoot();
-            this.handleTouch(e);
-        }, {passive: false});
-        this.canvas.addEventListener('touchmove', (e) => this.handleTouch(e), {passive: false});
-        this.canvas.addEventListener('touchend', (e) => {
-            if (this.state === 'START') {
-                this.start();
-            } else if (this.state === 'PLAYING') {
-                this.paddles[0].vy = 0;
-                this.paddles[1].vy = 0;
-            }
-        });
+            if (this.state === 'START') this.start();
+        }, {passive: true});
 
         // Name entry save button
         document.getElementById('save-score-btn').addEventListener('click', () => {
             this.saveScore();
         });
-    }
-
-    handleTouch(e) {
-        if (this.state !== 'PLAYING') return;
-        e.preventDefault(); // Prevent scrolling
-        
-        const rect = this.canvas.getBoundingClientRect();
-        
-        // Reset speeds, then set based on active touches
-        this.paddles[0].vy = 0;
-        this.paddles[1].vy = 0;
-
-        for (let i = 0; i < e.touches.length; i++) {
-            const touch = e.touches[i];
-            const x = touch.clientX - rect.left;
-            const y = touch.clientY - rect.top;
-            
-            // Left half controls P1, Right half controls P2 (or overrides AI)
-            const pIdx = x < this.canvas.width / 2 ? 0 : 1;
-            const p = this.paddles[pIdx];
-            
-            // Move towards touch Y
-            const deadzone = p.height / 4;
-            const center = p.y + p.height / 2;
-            
-            if (y < center - deadzone) {
-                p.vy = -p.speed;
-            } else if (y > center + deadzone) {
-                p.vy = p.speed;
-            }
-        }
     }
 
     triggerShake(magnitude) {
