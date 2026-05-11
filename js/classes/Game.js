@@ -37,13 +37,16 @@ export default class Game {
         this.bindEvents();
     }
 
-    init() {
+    init(mode = 1) {
         this.resize();
         
         this.paddles = [
             new Paddle(true, this.canvas.width, this.canvas.height),
             new Paddle(false, this.canvas.width, this.canvas.height)
         ];
+        
+        // Apply Mode logic AFTER paddles are created: 1 = vs AI, 2 = vs Human
+        this.paddles[1].isAI = (mode === 1);
         
         this.balls = [new Ball(this.canvas.width, this.canvas.height)];
         this.particles = [];
@@ -64,14 +67,11 @@ export default class Game {
             this.bgmGameplay.play().catch(e => console.warn(e));
         }
         
-        // Mode logic: 1 = vs AI, 2 = vs Human
-        this.paddles[1].isAI = (mode === 1);
-        
         this.soundManager.init(); // Must be called after user gesture
         this.state = 'PLAYING';
         document.getElementById('start-screen').classList.remove('active');
         document.getElementById('game-over-screen').classList.remove('active');
-        this.init();
+        this.init(mode);
         
         // Start loop if not already running
         if (!this.isRunning) {
