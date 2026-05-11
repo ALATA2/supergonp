@@ -105,9 +105,12 @@ export default class Game {
                     this.bgm.volume = 0.5;
                     this.bgm.play().catch(e => console.warn(e));
                 }
+            } else if (this.state === 'START') {
+                this.start();
             }
         };
         window.addEventListener('click', initBoot);
+        window.addEventListener('touchstart', initBoot, {passive: true});
         
         // Keyboard
         window.addEventListener('keydown', (e) => {
@@ -131,6 +134,7 @@ export default class Game {
                 initBoot(); // In case they haven't booted
                 if (this.state === 'START') this.start();
                 if (this.state === 'PLAYING') {
+                    if (pIdx === 1) this.paddles[1].isAI = false; // Disable AI if Player 2 uses touch buttons
                     this.paddles[pIdx].vy = dir * this.paddles[pIdx].speed;
                 }
             };
@@ -159,11 +163,7 @@ export default class Game {
         bindBtn('p2-up', 1, -1);
         bindBtn('p2-down', 1, 1);
 
-        // Keep a simple tap on canvas to start the game
-        this.canvas.addEventListener('touchstart', (e) => {
-            initBoot();
-            if (this.state === 'START') this.start();
-        }, {passive: true});
+        // Touch Virtual Buttons binding done above.
 
         // Name entry save button
         document.getElementById('save-score-btn').addEventListener('click', () => {
