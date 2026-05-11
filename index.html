@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Super GONP</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Load custom fonts for UI -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Game Container -->
+    <div id="game-container">
+        <!-- Canvas where the game is rendered -->
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- UI Overlay -->
+        <div id="ui-layer">
+            <div id="score-board">
+                <span id="score-p1">0</span>
+                <span id="score-separator">-</span>
+                <span id="score-p2">0</span>
+            </div>
+            
+            <div id="boot-screen" class="screen active">
+                <h2 class="blink">CLICK OR TAP TO INITIALIZE SYSTEM</h2>
+            </div>
+
+            <div id="start-screen" class="screen">
+                <!-- VFX Elements -->
+                <div class="vfx-laser"></div>
+                <div class="vfx-orbs"></div>
+                
+                <h1 class="neon-title">
+                    <span style="--delay: 0.2s">S</span>
+                    <span style="--delay: 0.8s">U</span>
+                    <span style="--delay: 0.5s">P</span>
+                    <span style="--delay: 0.1s">E</span>
+                    <span style="--delay: 0.7s">R</span>
+                    <span style="--delay: 1.2s">&nbsp;</span>
+                    <span style="--delay: 0.9s">G</span>
+                    <span style="--delay: 0.3s">O</span>
+                    <span style="--delay: 0.6s">N</span>
+                    <span style="--delay: 0.4s">P</span>
+                </h1>
+                
+                <div id="leaderboard">
+                    <h3>TOP SIGNATURES</h3>
+                    <ul id="leaderboard-list">
+                        <li>--- 0</li>
+                    </ul>
+                </div>
+
+                <p class="start-hint">Press SPACE or Tap to Start</p>
+                <div class="controls-hint">
+                    <p>Player 1: W/S</p>
+                    <p>Player 2 / AI: Up/Down</p>
+                </div>
+            </div>
+
+            <div id="game-over-screen" class="screen">
+                <h1 id="winner-text">PLAYER 1 WINS</h1>
+            </div>
+
+            <div id="name-entry-screen" class="screen">
+                <h1>NEW RECORD</h1>
+                <p id="score-display">SCORE: 0</p>
+                <div class="input-group">
+                    <input type="text" id="player-name" maxlength="3" autocomplete="off" spellcheck="false" placeholder="AAA">
+                    <button id="save-score-btn">SAVE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="bgm-intro" src="sound/intro.mp3" loop></audio>
+    <audio id="bgm-gameplay" src="sound/gameplay.mp3" loop></audio>
+
+    <!-- Main Module Entry Point -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
