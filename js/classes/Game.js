@@ -55,7 +55,7 @@ export default class Game {
         this.updateScoreUI();
     }
 
-    start() {
+    start(mode = 1) {
         if (this.bgm) this.bgm.pause();
         if (this.bgmGameplay) {
             this.bgmGameplay.currentTime = 0;
@@ -63,6 +63,9 @@ export default class Game {
             this.bgmGameplay.volume = 0.5;
             this.bgmGameplay.play().catch(e => console.warn(e));
         }
+        
+        // Mode logic: 1 = vs AI, 2 = vs Human
+        this.paddles[1].isAI = (mode === 1);
         
         this.soundManager.init(); // Must be called after user gesture
         this.state = 'PLAYING';
@@ -105,20 +108,25 @@ export default class Game {
                     this.bgm.volume = 0.5;
                     this.bgm.play().catch(e => console.warn(e));
                 }
-            } else if (this.state === 'START') {
-                this.start();
             }
         };
         window.addEventListener('click', initBoot);
         window.addEventListener('touchstart', initBoot, {passive: true});
+
+        // Mode Selection
+        const startMode = (mode) => {
+            initBoot(); // ensure system initialized
+            if (this.state === 'START') this.start(mode);
+        };
+        document.getElementById('btn-1p').addEventListener('click', () => startMode(1));
+        document.getElementById('btn-1p').addEventListener('touchstart', (e) => { e.preventDefault(); startMode(1); }, {passive: false});
+        document.getElementById('btn-2p').addEventListener('click', () => startMode(2));
+        document.getElementById('btn-2p').addEventListener('touchstart', (e) => { e.preventDefault(); startMode(2); }, {passive: false});
         
         // Keyboard
         window.addEventListener('keydown', (e) => {
             initBoot();
             this.keys[e.code] = true;
-            if (e.code === 'Space') {
-                if (this.state === 'START') this.start();
-            }
         });
         window.addEventListener('keyup', (e) => {
             this.keys[e.code] = false;
@@ -131,8 +139,6 @@ export default class Game {
             
             const startMove = (e) => {
                 e.preventDefault(); // Prevent zoom/scroll
-                initBoot(); // In case they haven't booted
-                if (this.state === 'START') this.start();
                 if (this.state === 'PLAYING') {
                     if (pIdx === 1) this.paddles[1].isAI = false; // Disable AI if Player 2 uses touch buttons
                     this.paddles[pIdx].vy = dir * this.paddles[pIdx].speed;
